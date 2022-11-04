@@ -33,7 +33,7 @@ class Environment:
         return Role(self.get(f"roles/{id}"))
 
     def get_roles(self):
-        return self.get("editable-roles")["data"]
+        return [ r for r in self.get("editable-roles")["data"] if not r.startswith("default~") ]
 
     def get(self, url):
         print(f"GET {self.base_url}/{url}")
