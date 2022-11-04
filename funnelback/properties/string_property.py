@@ -60,5 +60,6 @@ class StringDiff:
     def __repr__(self):
         v = {}
         if self.changed:
+            v["property"] = self.property.property
             v["changed"] = self.value
         return json.dumps(v, indent=2)

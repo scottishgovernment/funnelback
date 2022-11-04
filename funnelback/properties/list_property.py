@@ -53,6 +53,7 @@ class ListDiff:
 
     def __repr__(self):
         v = {}
+        v["property"] = self.property.property
         if self.added:
             v["added"] = self.added
         if self.removed:

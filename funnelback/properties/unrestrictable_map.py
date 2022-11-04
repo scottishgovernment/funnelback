@@ -74,6 +74,7 @@ class UnrestrictableMapDiff:
 
     def __repr__(self):
         v = {}
+        v["property"] = self.property.property
         if self.unrestricted is not None:
             v["unrestricted"] = self.unrestricted
         if self.added:
