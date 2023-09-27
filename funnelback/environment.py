@@ -27,7 +27,7 @@ class Environment:
         url = f"{self.base_url}/roles/{id}"
         r = self.client.put(url, params={'editable-in-role': 'govscot~infrastructure'})
         if r.status_code != 200:
-            raise Exception(f"Could not create role {id} on {self.name}", r)
+            raise Exception(f"Could not create role {id} on {self.name}", r, r.json()["errorMessage"])
 
     def get_role(self, id):
         return Role(self.get(f"roles/{id}"))
@@ -46,7 +46,7 @@ class Environment:
         print(f"PUT {self.base_url}/{url}")
         r = self.client.put(url, content=content)
         if r.status_code != 200:
-            raise Exception(f"Could not PUT {url}")
+            raise Exception(f"Could not PUT {url}", r.json()["errorMessage"])
 
     def delete(self, url):
         print(f"DELETE {self.base_url}/{url}")
