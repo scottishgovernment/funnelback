@@ -25,7 +25,7 @@ class Environment:
 
     def create_role(self, id):
         url = f"{self.base_url}/roles/{id}"
-        r = self.client.put(url)
+        r = self.client.put(url, params={'editable-in-role': 'govscot~infrastructure'})
         if r.status_code != 200:
             raise Exception(f"Could not create role {id} on {self.name}", r)
 
