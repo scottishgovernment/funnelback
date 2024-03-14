@@ -24,7 +24,7 @@ def sync(environment, dryrun):
         diff = state.diff(role)
         for d in diff:
             if not dryrun:
-                d.apply(env, id)
+                d.apply(env, role.path)
 
 
 def load_role(file):

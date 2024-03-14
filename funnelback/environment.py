@@ -9,11 +9,11 @@ class Environment:
             hostname = f"{client}-admin.clients.uk.funnelback.com"
         else:
             hostname = f"{prefix}-{client}-admin.clients.uk.funnelback.com"
-        self.base_url = f"https://{hostname}/admin-api/account/v2"
+        self.base_url = f"https://{hostname}"
         self.__client = None
 
     def has_role(self, id):
-        url = f"{self.base_url}/roles/{id}"
+        url = Role.path_for_id(id)
         r = self.client.head(url)
         if r.status_code == 200:
             return True
@@ -24,19 +24,25 @@ class Environment:
         )
 
     def create_role(self, id):
-        url = f"{self.base_url}/roles/{id}"
-        r = self.client.put(url, params={'editable-in-role': 'govscot~infrastructure'})
+        url = Role.path_for_id(id)
+        r = self.client.put(url, params={"editable-in-role": "govscot~infrastructure"})
         if r.status_code != 200:
-            raise Exception(f"Could not create role {id} on {self.name}", r, r.json()["errorMessage"])
+            raise Exception(
+                f"Could not create role {id} on {self.name}",
+                r,
+                r.json()["errorMessage"],
+            )
 
     def get_role(self, id):
-        return Role(self.get(f"roles/{id}"))
+        path = Role.path_for_id(id)
+        return Role(self.get(path))
 
     def get_roles(self):
         def built_in(role):
             return role.startswith("default~") or role.startswith("saas~")
 
-        return [r for r in self.get("editable-roles")["data"] if not built_in(r)]
+        path = "/admin-api/account/v2/editable-roles"
+        return [r for r in self.get(path)["data"] if not built_in(r)]
 
     def get(self, url):
         print(f"GET {self.base_url}/{url}")

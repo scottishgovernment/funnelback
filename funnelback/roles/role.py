@@ -91,9 +91,17 @@ class Role:
         self.role_suffixes = self.__add(Role.ROLE_SUFFIXES)
         self.json = json
 
+    @staticmethod
+    def path_for_id(id):
+        return f"/admin-api/account/v2/roles/{id}"
+
     @property
     def id(self):
         return self.json["data"]["id"]
+
+    @property
+    def path(self):
+        return Role.path_for_id(self.id)
 
     def __add(self, property):
         self.properties.append(property)
@@ -112,6 +120,3 @@ class Role:
     def normalise(self):
         for p in self.properties:
             p.from_json(self.json).normalise()
-
-    def url(self):
-        return f"roles/{self.id}"

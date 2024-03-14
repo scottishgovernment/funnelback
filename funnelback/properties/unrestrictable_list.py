@@ -55,18 +55,18 @@ class UnrestrictableListDiff:
     def changed(self):
         return (self.unrestricted is not None) or self.added or self.removed
 
-    def apply(self, env, id):
+    def apply(self, env, path):
         if self.unrestricted is not None:
-            url = f"roles/{id}/{self.property.unrestricted_url}"
+            url = f"{path}/{self.property.unrestricted_url}"
             if self.unrestricted:
                 env.put(url)
             else:
                 env.delete(url)
         for item in self.added:
-            url = f"roles/{id}/{self.property.url}/{item}"
+            url = f"{path}/{self.property.url}/{item}"
             env.put(url)
         for item in self.removed:
-            url = f"roles/{id}/{self.property.url}/{item}"
+            url = f"{path}/{self.property.url}/{item}"
             env.delete(url)
 
     def __repr__(self):

@@ -49,9 +49,9 @@ class StringDiff:
     def changed(self):
         return self._changed
 
-    def apply(self, env, id):
+    def apply(self, env, path):
         if self.changed:
-            url = f"roles/{id}/{self.property.url}"
+            url = f"{path}/{self.property.url}"
             v = {}
             v[self.property.property] = self.value
             js = json.dumps(v)

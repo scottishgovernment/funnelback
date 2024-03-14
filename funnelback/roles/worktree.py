@@ -28,10 +28,10 @@ class Worktree:
 
     def __source_dir(self, env=None):
         if env is None:
-            dir = 'common'
+            dir = "common"
         else:
             dir = env.name
-        return os.path.join(dir, 'roles')
+        return os.path.join(dir, "roles")
 
     def state_files(self, env):
         dir = self.__state_dir(env)
