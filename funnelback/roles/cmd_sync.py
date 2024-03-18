@@ -2,7 +2,7 @@ import click
 import json
 import os
 
-from .worktree import Worktree
+from ..worktree import Worktree
 from ..environments import ENVS
 from .role import Role
 
@@ -12,7 +12,7 @@ from .role import Role
 @click.option("--dryrun", flag_value=True, type=click.BOOL)
 def sync(environment, dryrun):
     env = ENVS[environment]
-    worktree = Worktree()
+    worktree = Worktree("roles")
     role_ids = env.get_roles()
     design_files = worktree.design_files(env)
     for path in design_files.values():

@@ -1,7 +1,7 @@
 import click
 
 from ..environments import ENVS
-from .worktree import Worktree
+from ..worktree import Worktree
 
 
 @click.command()
@@ -12,5 +12,6 @@ def fetch(environment):
     for id in role_ids:
         role = env.get_role(id)
         role.normalise()
-        worktree = Worktree()
-        worktree.write_state(env, role)
+        worktree = Worktree("roles")
+        name = role.id.split("~")[1]
+        worktree.write_state(env, name, role)

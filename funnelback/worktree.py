@@ -1,9 +1,11 @@
 import json
 import os
-from .role import Role
 
 
 class Worktree:
+    def __init__(self, name):
+        self.name = name
+
     def design_files(self, env):
         common = self.__list_dir(self.__source_dir())
         environment = self.__list_dir(self.__source_dir(env))
@@ -31,7 +33,7 @@ class Worktree:
             dir = "common"
         else:
             dir = env.name
-        return os.path.join(dir, "roles")
+        return os.path.join(dir, self.name)
 
     def state_files(self, env):
         dir = self.__state_dir(env)
@@ -44,10 +46,10 @@ class Worktree:
     def read_state(self, env, filename):
         path = self.__state_file(env, filename)
         with open(path, "r") as f:
-            return Role(json.load(f))
+            return json.load(f)
 
-    def write_state(self, env, role):
-        filename = role.id.split("~")[1] + ".json"
+    def write_state(self, env, name, role):
+        filename = name + ".json"
         path = self.__state_file(env, filename)
         dir = self.__state_dir(env)
         if not os.path.exists(dir):
@@ -57,7 +59,7 @@ class Worktree:
             f.write("\n")
 
     def __state_dir(self, env):
-        return f".state/{env.name}/roles"
+        return f".state/{env.name}/{self.name}"
 
     def __state_file(self, env, filename):
         dir = self.__state_dir(env)
