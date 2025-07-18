@@ -1,4 +1,4 @@
-from httpx import Client
+from httpx import Client, NetRCAuth
 from .roles.role import Role
 
 
@@ -66,7 +66,9 @@ class Environment:
     @property
     def client(self):
         if not self.__client:
+            auth = NetRCAuth()
             self.__client = Client(
+                auth=auth,
                 base_url=self.base_url,
                 headers={"Content-Type": "application/json"},
             )
