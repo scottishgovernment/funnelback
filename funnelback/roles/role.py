@@ -1,11 +1,10 @@
 from ..properties.list_property import ListProperty
 from ..properties.string_property import StringProperty
-from ..properties.unrestrictable_map import UnrestrictableMapProperty
 from ..properties.unrestrictable_list import UnrestrictableListProperty
+from ..properties.unrestrictable_map import UnrestrictableMapProperty
 
 
 class Role:
-
     SELF_DESCRIPTION = StringProperty("selfDescription", "self-description")
 
     PERMISSIONS = UnrestrictableListProperty("permissions", "permissions", "permission")
@@ -89,19 +88,19 @@ class Role:
         self.environments = self.__add(Role.ENVIRONMENTS)
         self.can_edit_config_keys = self.__add(Role.EDIT_CONFIG)
         self.role_suffixes = self.__add(Role.ROLE_SUFFIXES)
+        self.profiles = self.__add(Role.PROFILES)
         self.json = json
 
     @staticmethod
-    def path_for_id(id):
-        return f"/admin-api/account/v2/roles/{id}"
+    def path_for_id(client_id, id):
+        return f"/admin-api/account/v2/roles/{client_id}~{id}"
 
     @property
     def id(self):
-        return self.json["data"]["id"]
+        return self.json["data"]["id"].split("~")[1]
 
-    @property
-    def path(self):
-        return Role.path_for_id(self.id)
+    def path(self, client_id):
+        return Role.path_for_id(client_id, self.id)
 
     def __add(self, property):
         self.properties.append(property)

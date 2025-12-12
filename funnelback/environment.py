@@ -1,19 +1,19 @@
+from os import environ
+
 from httpx import Client, NetRCAuth
+
 from .roles.role import Role
 
 
 class Environment:
-    def __init__(self, name, client, prefix=None):
+    def __init__(self, name, client_id):
         self.name = name
-        if prefix is None:
-            hostname = f"{client}-admin.clients.uk.funnelback.com"
-        else:
-            hostname = f"{prefix}-{client}-admin.clients.uk.funnelback.com"
-        self.base_url = f"https://{hostname}"
+        self.base_url = "https://dxp02-uk-admin.funnelback.squiz.cloud"
+        self.client_id = client_id
         self.__client = None
 
     def has_role(self, id):
-        url = Role.path_for_id(id)
+        url = Role.path_for_id(self.client_id, id)
         r = self.client.head(url)
         if r.status_code == 200:
             return True
@@ -24,8 +24,12 @@ class Environment:
         )
 
     def create_role(self, id):
-        url = Role.path_for_id(id)
-        r = self.client.put(url, params={"editable-in-role": "govscot~infrastructure"})
+        url = Role.path_for_id(self.client_id, id)
+        print(f"PUT {self.base_url}/{url}?client-id={self.client_id}")
+        r = self.client.put(
+            url,
+            params={"editable-in-role": f"{self.client_id}~owner-resources"},
+        )
         if r.status_code != 200:
             raise Exception(
                 f"Could not create role {id} on {self.name}",
@@ -34,39 +38,42 @@ class Environment:
             )
 
     def get_role(self, id):
-        path = Role.path_for_id(id)
+        path = Role.path_for_id(self.client_id, id)
         return Role(self.get(path))
 
     def get_roles(self):
         def built_in(role):
-            return role.startswith("default~") or role.startswith("saas~")
+            return role.startswith("_default_roles_~") or role.startswith("dxp~")
 
         path = "/admin-api/account/v2/editable-roles"
-        return [r for r in self.get(path)["data"] if not built_in(r)]
+        roles = [r for r in self.get(path)["data"] if not built_in(r)]
+        roles = [r.split("~")[1] for r in roles]
+        return roles
 
     def get(self, url):
-        print(f"GET {self.base_url}/{url}")
-        r = self.client.get(url)
+        print(f"GET {self.base_url}{url}?client-id={self.client_id}")
+        r = self.client.get(url, params={"client-id": self.client_id})
         if r.status_code != 200:
             raise Exception(f"Could not GET {url}", r)
         return r.json()
 
     def put(self, url, content=None):
-        print(f"PUT {self.base_url}/{url}")
-        r = self.client.put(url, content=content)
+        print(f"PUT {self.base_url}/{url}?client-id={self.client_id}")
+        r = self.client.put(url, content=content, params={"client-id": self.client_id})
         if r.status_code != 200:
-            raise Exception(f"Could not PUT {url}", r.json()["errorMessage"])
+            # raise Exception(f"Could not PUT {url}", r.json()["errorMessage"])
+            print(f"Could not PUT {url}", r.json()["errorMessage"])
 
     def delete(self, url):
-        print(f"DELETE {self.base_url}/{url}")
-        r = self.client.delete(url)
+        print(f"DELETE {self.base_url}/{url}?client-id={self.client_id}")
+        r = self.client.delete(url, params={"client-id": self.client_id})
         if r.status_code != 200:
             raise Exception(f"Could not DELETE {url}", r)
 
     @property
     def client(self):
         if not self.__client:
-            auth = NetRCAuth()
+            auth = NetRCAuth(file=environ.get("NETRC"))
             self.__client = Client(
                 auth=auth,
                 base_url=self.base_url,

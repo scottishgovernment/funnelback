@@ -10,6 +10,17 @@ class Worktree:
         common = self.__list_dir(self.__source_dir())
         environment = self.__list_dir(self.__source_dir(env))
         common.update(environment)
+
+        common = {
+            k: v
+            for k, v in common.items()
+            if k
+            not in [
+                "resources.json",
+                "primary.json",
+                "owner-resources.json",
+            ]
+        }
         return common
 
     def __list_dir(self, dir):

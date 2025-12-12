@@ -9,9 +9,11 @@ from ..worktree import Worktree
 def fetch(environment):
     env = ENVS[environment]
     role_ids = env.get_roles()
-    for id in role_ids:
+    ignored_roles = ["owner-resources", "primary", "in-owner-resources", "resources"]
+    ids = [r for r in role_ids if r not in ignored_roles]
+    for id in ids:
         role = env.get_role(id)
         role.normalise()
         worktree = Worktree("roles")
-        name = role.id.split("~")[1]
+        name = role.id
         worktree.write_state(env, name, role)

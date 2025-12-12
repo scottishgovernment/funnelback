@@ -1,6 +1,6 @@
 from .environment import Environment
 
-DEV = Environment("dev", "scotgov", "dev")
-UAT = Environment("uat", "scotgov", "uat")
-PRD = Environment("prd", "scotgov")
+DEV = Environment("dev", "govscot-dev")
+UAT = Environment("uat", "govscot-uat")
+PRD = Environment("prd", "govscot")
 ENVS = {e.name: e for e in [DEV, UAT, PRD]}
