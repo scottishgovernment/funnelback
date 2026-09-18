@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import click
+from funnelback.licence.cli import licence
 from funnelback.roles.cli import roles
 
 
@@ -8,5 +9,6 @@ def cli():
     pass
 
 
+cli.add_command(licence)
 cli.add_command(roles)
 cli()

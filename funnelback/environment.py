@@ -41,6 +41,10 @@ class Environment:
         path = Role.path_for_id(self.client_id, id)
         return Role(self.get(path))
 
+    def get_collections(self):
+        path = "/admin-api/collections/v1/collections"
+        return self.get(path)["data"]
+
     def get_roles(self):
         def built_in(role):
             return role.startswith("_default_roles_~") or role.startswith("dxp~")
@@ -53,6 +57,13 @@ class Environment:
     def get(self, url):
         print(f"GET {self.base_url}{url}?client-id={self.client_id}")
         r = self.client.get(url, params={"client-id": self.client_id})
+        if r.status_code != 200:
+            raise Exception(f"Could not GET {url}", r)
+        return r.json()
+
+    def get_raw(self, url):
+        print(f"GET {self.base_url}{url}")
+        r = self.client.get(url)
         if r.status_code != 200:
             raise Exception(f"Could not GET {url}", r)
         return r.json()
